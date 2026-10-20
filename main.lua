@@ -40,6 +40,13 @@ function love.draw()
         20,
         100
     )
+
+    love.graphics.circle(
+        "fill",
+        100,
+        334,
+        12
+    )
 end
 
 
@@ -48,6 +55,8 @@ function love.keypressed(key)
         playerY = playerY - 50
     elseif (key == "down" or key == "s" or key == "S") and playerY + 50 < 668 then
         playerY = playerY + 50
+    elseif key == "escape" then
+        love.event.quit()
     end
 end
 
