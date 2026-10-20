@@ -1,18 +1,23 @@
-local config = require("config")
+local palette = require("src.palette")
+
+playerY = 334
+oppX = 334
+
+scorePlayer = 0
+scoreOpp = 0
+
 
 -- Setting up the main project frame
 function love.load()
-    local r, g, b = love.math.colorFromBytes(config.palette.background)
+    local r, g, b = love.math.colorFromBytes(palette.background)
     love.graphics.setBackgroundColor(r, g, b)
 
-    playerY = 334
-    oppX = 334
 end
 
 
 function love.draw()
     -- Setting up the table separator
-    r, g, b = love.math.colorFromBytes(config.palette.seperator)
+    r, g, b = love.math.colorFromBytes(palette.seperator)
     love.graphics.setColor(r, g, b)
     love.graphics.rectangle(
         "fill",
@@ -22,7 +27,7 @@ function love.draw()
         768
     )
 
-    r, g, b = love.math.colorFromBytes(config.palette.foreground)
+    r, g, b = love.math.colorFromBytes(palette.foreground)
     love.graphics.setColor(r,g,b)
     love.graphics.rectangle(
         "fill",
