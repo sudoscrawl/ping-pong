@@ -1,4 +1,5 @@
 require("src.controls")
+require("src.movements")
 
 local palette = require("src.palette")
 local data = require("src.data")
@@ -22,4 +23,3 @@ function love.draw()
 
 	love.graphics.circle("fill", data.cords.posX.ball, data.cords.posY.ball, 12)
 end
-
