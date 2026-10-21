@@ -43,7 +43,27 @@ function love.update(dt)
 		data.velocity.SpdY.ball = 0
 	end
 
-	-- Computer AI movements
+	-- Opponent Collisions
+	if data.cords.posY.opponent <= data.cords.posY.ball and data.cords.posY.ball < data.cords.posY.opponent + 50 then
+		if data.cords.posX.ball < 1024 and data.cords.posX.ball >= 1004 then
+			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
+			if data.velocity.SpdY.ball > 0 then
+				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
+				finalPosY = getFinalPos()
+			end
+		end
+	elseif
+		data.cords.posY.opponent + 50 <= data.cords.posY.ball
+		and data.cords.posY.ball <= data.cords.posY.opponent + 100
+	then
+		if data.cords.posX.ball < 1024 and data.cords.posX.ball >= 1004 then
+			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
+			if data.velocity.SpdY.ball < 0 then
+				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
+				finalPosY = getFinalPos()
+			end
+		end
+	end
 end
 
 function getFinalPos()
