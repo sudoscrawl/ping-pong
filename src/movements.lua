@@ -1,26 +1,24 @@
 local data = require("src.data")
 
-
 local function calculate_final_position()
-	local totalTime = 1024 / math.abs(data.velocity.SpdX.ball)
-	local C2CTime = 768 / math.abs(data.velocity.SpdY.ball)
-	local finalPosY = 0
+	data.predictor.total_trajectory_time = 1024 / math.abs(data.velocity.SpdX.ball)
+	data.predictor.collision_to_collision_time = 768 / math.abs(data.velocity.SpdY.ball)
 	if data.velocity.SpdY.ball > 0 then
-		totalTime = totalTime - ((768 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		totalTime = totalTime % C2CTime
-		finalPosY = totalTime * data.velocity.SpdY.ball
+		data.predictor.total_trajectory_time = data.predictor.total_trajectory_time
+			- ((768 - data.cords.posY.ball) / data.velocity.SpdY.ball)
+		data.predictor.total_trajectory_time = data.predictor.total_trajectory_time
+			% data.predictor.collision_to_collision_time
+		data.predictor.final_position = data.predictor.total_trajectory_time * data.velocity.SpdY.ball
 	elseif data.velocity.SpdY.ball < 0 then
-		totalTime = totalTime - ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		totalTime = totalTime % C2CTime
-		finalPosY = totalTime * data.velocity.SpdY.ball
+		data.predictor.total_trajectory_time = data.predictor.total_trajectory_time
+			- ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
+		data.predictor.total_trajectory_time = data.predictor.total_trajectory_time
+			% data.predictor.collision_to_collision_time
+		data.predictor.final_position = data.predictor.total_trajectory_time * data.velocity.SpdY.ball
 	end
-	return finalPosY
 end
 
-
 function love.update(dt)
-	local finalPosY = 334
-
 	data.cords.posY.ball = data.cords.posY.ball + (data.velocity.SpdY.ball * dt)
 	data.cords.posX.ball = data.cords.posX.ball + (data.velocity.SpdX.ball * dt)
 
@@ -35,6 +33,7 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball > 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
+				calculate_final_position()
 			end
 		end
 	elseif
@@ -44,6 +43,7 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball < 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
+				calculate_final_position()
 			end
 		end
 	end
@@ -81,5 +81,3 @@ function love.update(dt)
 		end
 	end
 end
-
-
