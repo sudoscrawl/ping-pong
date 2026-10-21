@@ -23,6 +23,12 @@ local data = {
 			ball = -200,
 		},
 	},
+
+    predictor = {
+        total_trajectory_time = 0,
+        collision_to_collision_time = 0,
+        final_position = 0
+    }
 }
 
 return data

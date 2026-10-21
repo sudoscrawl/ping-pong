@@ -1,5 +1,23 @@
 local data = require("src.data")
 
+
+local function calculate_final_position()
+	local totalTime = 1024 / math.abs(data.velocity.SpdX.ball)
+	local C2CTime = 768 / math.abs(data.velocity.SpdY.ball)
+	local finalPosY = 0
+	if data.velocity.SpdY.ball > 0 then
+		totalTime = totalTime - ((768 - data.cords.posY.ball) / data.velocity.SpdY.ball)
+		totalTime = totalTime % C2CTime
+		finalPosY = totalTime * data.velocity.SpdY.ball
+	elseif data.velocity.SpdY.ball < 0 then
+		totalTime = totalTime - ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
+		totalTime = totalTime % C2CTime
+		finalPosY = totalTime * data.velocity.SpdY.ball
+	end
+	return finalPosY
+end
+
+
 function love.update(dt)
 	local finalPosY = 334
 
@@ -17,7 +35,6 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball > 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
-				finalPosY = getFinalPos()
 			end
 		end
 	elseif
@@ -27,7 +44,6 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball < 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
-				finalPosY = getFinalPos()
 			end
 		end
 	end
@@ -66,18 +82,4 @@ function love.update(dt)
 	end
 end
 
-function getFinalPos()
-	local totalTime = 1024 / math.abs(data.velocity.SpdX.ball)
-	local C2CTime = 768 / math.abs(data.velocity.SpdY.ball)
-	local finalPosY = 0
-	if data.velocity.SpdY.ball > 0 then
-		totalTime = totalTime - ((768 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		totalTime = totalTime % C2CTime
-		finalPosY = totalTime * data.velocity.SpdY.ball
-	elseif data.velocity.SpdY.ball < 0 then
-		totalTime = totalTime - ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		totalTime = totalTime % C2CTime
-		finalPosY = totalTime * data.velocity.SpdY.ball
-	end
-	return finalPosY
-end
+
