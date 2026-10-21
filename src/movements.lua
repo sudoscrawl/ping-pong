@@ -65,7 +65,6 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball > 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
-				finalPosY = getFinalPos()
 			end
 		end
 	elseif
@@ -76,8 +75,21 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball < 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
-				finalPosY = getFinalPos()
 			end
+		end
+	end
+
+	-- Opponent Movement Mechanisms
+	if
+		not (
+			data.predictor.final_position >= data.cords.posY.opponent
+			and data.predictor.final_position <= data.cords.posY.opponent + 100
+		)
+	then
+		if data.predictor.final_position < data.cords.posY.opponent then
+			data.cords.posY.opponent = data.cords.posY.opponent - (50 * dt)
+		elseif data.predictor.final_position > data.cords.posY.opponent + 100 then
+			data.cords.posY.opponent = data.cords.posY.opponent + (50 * dt)
 		end
 	end
 end
