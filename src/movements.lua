@@ -1,20 +1,15 @@
 local data = require("src.data")
 
 local function calculate_final_position()
-	-- Time for the ball to reach the opponent's side from its current X position
 	local travel_time = (1004 - data.cords.posX.ball) / math.abs(data.velocity.SpdX.ball)
-	-- Compute the unrestricted final Y (as if there were no walls)
 	local final_y = data.cords.posY.ball + (data.velocity.SpdY.ball * travel_time)
-	-- Fold into [0, 768] to simulate wall bounces using period = 2 * 768
 	local period = 2 * 768
-	-- Lua's % always returns a non-negative result when divisor is positive
 	local pos_in_period = final_y % period
 	if pos_in_period <= 768 then
 		data.predictor.final_position = pos_in_period
 	else
 		data.predictor.final_position = period - pos_in_period
 	end
-	-- Clamp to valid range
 	data.predictor.final_position = math.max(0, math.min(768, data.predictor.final_position))
 end
 

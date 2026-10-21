@@ -21,6 +21,8 @@ local data = {
 		},
 		SpdY = {
 			ball = -400,
+			player = 75,
+			opponent = 100,
 		},
 	},
 

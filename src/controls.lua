@@ -5,13 +5,13 @@ function love.keypressed(key)
 		love.event.quit()
 	-- Upward movement controls
 	elseif key == "up" or key == "J" or key == "j" or key == "w" or key == "W" then
-		if data.cords.posY.player - 75 > 0 then
-			data.cords.posY.player = data.cords.posY.player - 75
+		if data.cords.posY.player - data.velocity.SpdY.player > 0 then
+			data.cords.posY.player = data.cords.posY.player - data.velocity.SpdY.player
 		end
 	-- Downward movement controls
 	elseif key == "down" or key == "K" or key == "k" or key == "S" or key == "s" then
-		if data.cords.posY.player + 75 < 668 then
-			data.cords.posY.player = data.cords.posY.player + 75
+		if data.cords.posY.player + data.velocity.SpdY.player < 668 then
+			data.cords.posY.player = data.cords.posY.player + data.velocity.SpdY.player
 		end
 	end
 end
