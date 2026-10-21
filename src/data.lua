@@ -20,7 +20,7 @@ local data = {
 			ball = -220,
 		},
 		SpdY = {
-			ball = 100,
+			ball = -200,
 		},
 	},
 }
