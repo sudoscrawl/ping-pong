@@ -10,8 +10,14 @@ local function calculate_final_position()
 			data.predictor.remaining_time / data.predictor.collision_to_collision_time
 		) + 1
 		data.predictor.remaining_time = data.predictor.remaining_time % data.predictor.collision_to_collision_time
-		data.predictor.final_position = data.predictor.remaining_time
-			* (data.velocity.SpdY.ball * -1 ^ data.predictor.number_of_collisions)
+
+		local direction = data.velocity.SpdY.ball * (-1) ^ data.predictor.number_of_collisions
+
+		if direction > 0 then
+			data.predictor.final_position = data.predictor.remaining_time * direction
+		else
+			data.predictor.final_position = 768 - (data.predictor.remaining_time * direction)
+		end
 	elseif data.velocity.SpdY.ball < 0 then
 		data.predictor.remaining_time = data.predictor.total_trajectory_time
 			- ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
@@ -19,8 +25,14 @@ local function calculate_final_position()
 			data.predictor.remaining_time / data.predictor.collision_to_collision_time
 		) + 1
 		data.predictor.remaining_time = data.predictor.remaining_time % data.predictor.collision_to_collision_time
-		data.predictor.final_position = data.predictor.remaining_time
-			* (data.velocity.SpdY.ball * -1 ^ data.predictor.number_of_collisions)
+
+		local direction = data.velocity.SpdY.ball * (-1) ^ data.predictor.number_of_collisions
+
+		if direction > 0 then
+			data.predictor.final_position = data.predictor.remaining_time * direction
+		else
+			data.predictor.final_position = 768 - (data.predictor.remaining_time * direction)
+		end
 	end
 end
 
@@ -93,9 +105,10 @@ function love.update(dt)
 		)
 	then
 		if data.predictor.final_position < data.cords.posY.opponent then
-			data.cords.posY.opponent = data.cords.posY.opponent - (50 * dt)
+			data.cords.posY.opponent = math.min(data.predictor.final_position, data.cords.posY.opponent - (75 * dt))
 		elseif data.predictor.final_position > data.cords.posY.opponent + 100 then
-			data.cords.posY.opponent = data.cords.posY.opponent + (50 * dt)
+			data.cords.posY.opponent =
+				math.min(data.predictor.final_position - 100, data.cords.posY.opponent + (75 * dt))
 		end
 	end
 end
