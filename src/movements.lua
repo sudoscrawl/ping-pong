@@ -80,17 +80,30 @@ function love.update(dt)
 	end
 
 	-- Opponent Movement Mechanisms
-	if
-		not (
-			data.predictor.final_position >= data.cords.posY.opponent
-			and data.predictor.final_position <= data.cords.posY.opponent + 100
-		)
-	then
-		if data.predictor.final_position < data.cords.posY.opponent then
-			data.cords.posY.opponent = math.max(data.predictor.final_position, data.cords.posY.opponent - (350 * dt))
-		elseif data.predictor.final_position > data.cords.posY.opponent + 100 then
-			data.cords.posY.opponent =
-				math.min(data.predictor.final_position, data.cords.posY.opponent + (350 * dt))
+	local opponent_speed = 0
+	local target_y = data.cords.posY.opponent -- default: stay put
+
+	if data.velocity.SpdX.ball > 0 then
+		-- Ball is heading toward opponent: continuously predict and intercept
+		calculate_final_position()
+		-- Aim to center the paddle on the predicted landing position
+		target_y = data.predictor.final_position - 50
+		target_y = math.max(0, math.min(668, target_y))
+		-- Move faster as the ball gets closer (urgency)
+		local urgency = math.max(0, (data.cords.posX.ball - 20) / 984) -- 0 at player side, 1 at opponent side
+		opponent_speed = 150 + 200 * urgency -- 150 to 350 px/s
+	elseif data.velocity.SpdX.ball < 0 then
+		-- Ball is heading away: return toward center to be ready for the next shot
+		target_y = 334
+		opponent_speed = 100
+	end
+
+	local diff = target_y - data.cords.posY.opponent
+	if math.abs(diff) > 2 then
+		if diff < 0 then
+			data.cords.posY.opponent = math.max(target_y, data.cords.posY.opponent - opponent_speed * dt)
+		else
+			data.cords.posY.opponent = math.min(target_y, data.cords.posY.opponent + opponent_speed * dt)
 		end
 	end
 	-- Clamp opponent paddle to screen bounds
