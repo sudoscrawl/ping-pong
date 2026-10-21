@@ -17,10 +17,10 @@ local data = {
 
 	velocity = {
 		SpdX = {
-			ball = -220,
+			ball = -550,
 		},
 		SpdY = {
-			ball = -200,
+			ball = -700,
 		},
 	},
 

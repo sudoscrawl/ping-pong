@@ -1,39 +1,21 @@
 local data = require("src.data")
 
 local function calculate_final_position()
-	data.predictor.total_trajectory_time = 1024 / math.abs(data.velocity.SpdX.ball)
-	data.predictor.collision_to_collision_time = 768 / math.abs(data.velocity.SpdY.ball)
-	if data.velocity.SpdY.ball > 0 then
-		data.predictor.remaining_time = data.predictor.total_trajectory_time
-			- ((768 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		data.predictor.number_of_collisions = math.floor(
-			data.predictor.remaining_time / data.predictor.collision_to_collision_time
-		) + 1
-		data.predictor.remaining_time = data.predictor.remaining_time % data.predictor.collision_to_collision_time
-
-		local direction = data.velocity.SpdY.ball * (-1) ^ data.predictor.number_of_collisions
-
-		if direction > 0 then
-			data.predictor.final_position = data.predictor.remaining_time * direction
-		else
-			data.predictor.final_position = 768 - (data.predictor.remaining_time * direction)
-		end
-	elseif data.velocity.SpdY.ball < 0 then
-		data.predictor.remaining_time = data.predictor.total_trajectory_time
-			- ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		data.predictor.number_of_collisions = math.floor(
-			data.predictor.remaining_time / data.predictor.collision_to_collision_time
-		) + 1
-		data.predictor.remaining_time = data.predictor.remaining_time % data.predictor.collision_to_collision_time
-
-		local direction = data.velocity.SpdY.ball * (-1) ^ data.predictor.number_of_collisions
-
-		if direction > 0 then
-			data.predictor.final_position = data.predictor.remaining_time * direction
-		else
-			data.predictor.final_position = 768 - (data.predictor.remaining_time * direction)
-		end
+	-- Time for the ball to reach the opponent's side from its current X position
+	local travel_time = (1004 - data.cords.posX.ball) / math.abs(data.velocity.SpdX.ball)
+	-- Compute the unrestricted final Y (as if there were no walls)
+	local final_y = data.cords.posY.ball + (data.velocity.SpdY.ball * travel_time)
+	-- Fold into [0, 768] to simulate wall bounces using period = 2 * 768
+	local period = 2 * 768
+	-- Lua's % always returns a non-negative result when divisor is positive
+	local pos_in_period = final_y % period
+	if pos_in_period <= 768 then
+		data.predictor.final_position = pos_in_period
+	else
+		data.predictor.final_position = period - pos_in_period
 	end
+	-- Clamp to valid range
+	data.predictor.final_position = math.max(0, math.min(768, data.predictor.final_position))
 end
 
 function love.update(dt)
@@ -51,8 +33,8 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball > 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
-				calculate_final_position()
 			end
+			calculate_final_position()
 		end
 	elseif
 		data.cords.posY.player + 50 <= data.cords.posY.ball and data.cords.posY.ball <= data.cords.posY.player + 100
@@ -61,8 +43,8 @@ function love.update(dt)
 			data.velocity.SpdX.ball = data.velocity.SpdX.ball * -1
 			if data.velocity.SpdY.ball < 0 then
 				data.velocity.SpdY.ball = data.velocity.SpdY.ball * -1
-				calculate_final_position()
 			end
+			calculate_final_position()
 		end
 	end
 
@@ -105,10 +87,12 @@ function love.update(dt)
 		)
 	then
 		if data.predictor.final_position < data.cords.posY.opponent then
-			data.cords.posY.opponent = math.min(data.predictor.final_position, data.cords.posY.opponent - (75 * dt))
+			data.cords.posY.opponent = math.max(data.predictor.final_position, data.cords.posY.opponent - (350 * dt))
 		elseif data.predictor.final_position > data.cords.posY.opponent + 100 then
 			data.cords.posY.opponent =
-				math.min(data.predictor.final_position - 100, data.cords.posY.opponent + (75 * dt))
+				math.min(data.predictor.final_position, data.cords.posY.opponent + (350 * dt))
 		end
 	end
+	-- Clamp opponent paddle to screen bounds
+	data.cords.posY.opponent = math.max(0, math.min(668, data.cords.posY.opponent))
 end
