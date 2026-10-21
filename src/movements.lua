@@ -6,15 +6,21 @@ local function calculate_final_position()
 	if data.velocity.SpdY.ball > 0 then
 		data.predictor.remaining_time = data.predictor.total_trajectory_time
 			- ((768 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		data.predictor.remaining_time = data.predictor.remaining_time
-			% data.predictor.collision_to_collision_time
-		data.predictor.final_position = data.predictor.remaining_time * data.velocity.SpdY.ball
+		data.predictor.number_of_collisions = math.floor(
+			data.predictor.remaining_time / data.predictor.collision_to_collision_time
+		) + 1
+		data.predictor.remaining_time = data.predictor.remaining_time % data.predictor.collision_to_collision_time
+		data.predictor.final_position = data.predictor.remaining_time
+			* (data.velocity.SpdY.ball * -1 ^ data.predictor.number_of_collisions)
 	elseif data.velocity.SpdY.ball < 0 then
 		data.predictor.remaining_time = data.predictor.total_trajectory_time
 			- ((0 - data.cords.posY.ball) / data.velocity.SpdY.ball)
-		data.predictor.remaining_time = data.predictor.remaining_time
-			% data.predictor.collision_to_collision_time
-		data.predictor.final_position = data.predictor.remaining_time* data.velocity.SpdY.ball
+		data.predictor.number_of_collisions = math.floor(
+			data.predictor.remaining_time / data.predictor.collision_to_collision_time
+		) + 1
+		data.predictor.remaining_time = data.predictor.remaining_time % data.predictor.collision_to_collision_time
+		data.predictor.final_position = data.predictor.remaining_time
+			* (data.velocity.SpdY.ball * -1 ^ data.predictor.number_of_collisions)
 	end
 end
 

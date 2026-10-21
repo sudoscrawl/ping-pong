@@ -27,7 +27,8 @@ local data = {
 	predictor = {
 		total_trajectory_time = 0,
 		collision_to_collision_time = 0,
-        remaining_time = 0,
+		remaining_time = 0,
+		number_of_collisions = 0,
 		final_position = 334,
 	},
 }
